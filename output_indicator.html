@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Output Indicators Trend Analysis Report</title>
+    <style>
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f6f9;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #e3e8ed;
+        }
+        h1 {
+            color: #1e3a8a;
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+        h2 {
+            color: white;
+            background-color: #2563eb;
+            margin: 40px -30px 30px -30px;
+            padding: 20px 30px;
+            font-size: 1.6em;
+            font-weight: 500;
+            border-left: 5px solid #1d4ed8;
+            scroll-margin-top: 80px;
+        }
+        h3 {
+            color: #1e3a8a;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #bfdbfe;
+            padding-bottom: 8px;
+            scroll-margin-top: 80px;
+        }
+        
+        /* Enhanced Navigation Menu Styles */
+        .section-nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 2px solid #2563eb;
+            border-radius: 8px;
+            max-width: 350px;
+            min-width: 60px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .nav-header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+            user-select: none;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .nav-toggle {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .nav-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .nav-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: white;
+        }
+
+        .nav-content.expanded {
+            max-height: 1000px;
+            padding: 10px 0;
+        }
+
+        .nav-main-item {
+            display: block;
+            color: #2563eb;
+            text-decoration: none;
+            padding: 8px 15px;
+            font-size: 13px;
+            font-weight: 600;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .nav-main-item:hover {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .nav-main-item.active {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            border-left: 4px solid #2563eb;
+        }
+
+        .nav-sub-item {
+            display: block;
+            color: #64748b;
+            text-decoration: none;
+            padding: 6px 20px;
+            font-size: 11px;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #e2e8f0;
+            line-height: 1.3;
+        }
+
+        .nav-sub-item:hover {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding-left: 25px;
+        }
+
+        .nav-sub-item.active {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            font-weight: 600;
+            border-left: 3px solid #2563eb;
+        }
+
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            z-index: 1001;
+            transition: width 0.3s ease;
+        }
+
+        /* Chart Styles */
+        .chart-container {
+            background-color: #fafbfc;
+            border: 1px solid #e3e8ed;
+            border-radius: 6px;
+            margin: 25px 0;
+            padding: 20px;
+        }
+
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1e3a8a;
+            font-size: 1.1em;
+            background-color: #eff6ff;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #d1d9e0;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .scaling-notice {
+            background-color: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #92400e;
+            font-weight: 500;
+        }
+
+        .stats-box {
+            background-color: #eff6ff;
+            border: 2px solid #2563eb;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 50px;
+            text-align: center;
+            color: #1e3a8a;
+        }
+
+        @media (max-width: 768px) {
+            .section-nav {
+                top: 10px;
+                right: 10px;
+                max-width: 280px;
+            }
+            .container {
+                padding: 15px;
+                margin: 0 10px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <div class="section-nav" id="sectionNav">
+        <div class="nav-header" onclick="toggleNav()">
+            <span class="nav-title">Navigation</span>
+            <span class="nav-toggle" id="navToggle">▼</span>
+        </div>
+        <div class="nav-content" id="navContent">
+            <a href="#overview" class="nav-main-item" onclick="scrollToSection('overview')">Overview</a>
+            <a href="#indicator-1" class="nav-sub-item" onclick="scrollToSection('indicator-1')">1. Parasitological Test - All</a>
+            <a href="#indicator-2" class="nav-sub-item" onclick="scrollToSection('indicator-2')">2. First-line Treatment</a>
+            <a href="#indicator-3" class="nav-sub-item" onclick="scrollToSection('indicator-3')">3. Facility Reports</a>
+            <a href="#indicator-4" class="nav-sub-item" onclick="scrollToSection('indicator-4')">4. Test - Public Facilities</a>
+            <a href="#indicator-5" class="nav-sub-item" onclick="scrollToSection('indicator-5')">5. Test - Community</a>
+            <a href="#indicator-6" class="nav-sub-item" onclick="scrollToSection('indicator-6')">6. Test - Private Sector</a>
+            <a href="#indicator-7" class="nav-sub-item" onclick="scrollToSection('indicator-7')">7. Treatment - Public All</a>
+            <a href="#indicator-8" class="nav-sub-item" onclick="scrollToSection('indicator-8')">8. Treatment - Public Confirmed</a>
+            <a href="#indicator-9" class="nav-sub-item" onclick="scrollToSection('indicator-9')">9. Treatment - Community</a>
+            <a href="#indicator-10" class="nav-sub-item" onclick="scrollToSection('indicator-10')">10. Treatment - Private</a>
+            <a href="#indicator-11" class="nav-sub-item" onclick="scrollToSection('indicator-11')">11. Prompt Care U5</a>
+            <a href="#indicator-12" class="nav-sub-item" onclick="scrollToSection('indicator-12')">12. IPTp Coverage</a>
+            <a href="#indicator-13" class="nav-sub-item" onclick="scrollToSection('indicator-13')">13. IRS Population</a>
+            <a href="#indicator-14" class="nav-sub-item" onclick="scrollToSection('indicator-14')">14. IRS Children U5</a>
+            <a href="#indicator-15" class="nav-sub-item" onclick="scrollToSection('indicator-15')">15. IRS Pregnant Women</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Output Indicators Trend Analysis Report (2021-2024)<br><small>Malaria Prevention and Control Program</small></h1>
+
+        <div id="overview" class="section">
+            <h2>Overview</h2>
+            <div class="scaling-notice">
+                <strong>Focus:</strong> Output indicators measure the direct results of program activities
+                <br><strong>Individual Scaling:</strong> Each chart uses its own optimized Y-axis scale for better visualization
+                <br><strong>Data Source:</strong> HMIS (Health Management Information System), LMIS, IRS Reports
+                <br><strong>Structure:</strong> Target vs Achieved values with performance analysis
+                <br><strong>Period:</strong> 2021 through 2024 (4 years)
+                <br><strong>Total Indicators:</strong> 15 Output Indicators
+            </div>
+        </div>
+
+        <!-- Output Indicator Charts will be generated by JavaScript -->
+        <div id="chartsContainer">
+            <!-- Charts will be inserted here -->
+        </div>
+
+        <div class="stats-box">
+            <h3>Analysis Complete!</h3>
+            <p><strong>15 Output Indicators analyzed</strong></p>
+            <p><strong>Period:</strong> 2021-2024 (4 years)</p>
+            <p><strong>Focus:</strong> Direct program outputs with target vs achieved performance analysis</p>
+            <p><strong>Key Areas:</strong> Testing, Treatment, Reporting, Prevention (IRS), Community Care</p>
+        </div>
+    </div>
+
+    <script>
+        // Output Indicators Data - 15 indicators as specified
+        const outputIndicators = [
+        {
+                "name": "Proportion of patients with suspected malaria who received a parasitological test",
+                "shortName": "Parasitological Test - All",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 97.4
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 97.8
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 97.8
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 84.8
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of patients with confirmed malaria who received first-line antimalarial treatment",
+                "shortName": "First-line Treatment",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 91.8
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 90.2
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 91.3
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 89.8
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of expected health facility reports received",
+                "shortName": "Facility Reports",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 82.9
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 83.9
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 70.9
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 82.2
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of suspected malaria cases that receive a parasitological test at public sector health facilities",
+                "shortName": "Test - Public Facilities",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 98.5
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 95.9
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 93.0
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 89.9
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of suspected malaria cases that receive a parasitological test in the community",
+                "shortName": "Test - Community",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 71.6
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 44.3
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 64.9
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 58.3
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of suspected malaria cases that receive a parasitological test in the private sector",
+                "shortName": "Test - Private Sector",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 100.0
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 98.9
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 100.0
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 95.0
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of malaria cases (presumed and confirmed) that received first line antimalarial treatment at public sector health facilities",
+                "shortName": "Treatment - Public All",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 92.4
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 90.6
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 92.4
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 91.2
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of confirmed malaria cases that received first-line antimalarial treatment at public sector health facilities",
+                "shortName": "Treatment - Public Confirmed",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 92.3
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 90.2
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 91.8
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 90.7
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of confirmed malaria cases that received first-line antimalarial treatment in the community",
+                "shortName": "Treatment - Community",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 78.7
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 70.6
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 87.3
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 84.2
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of confirmed malaria cases that received first-line antimalarial treatment at private sector facilities",
+                "shortName": "Treatment - Private",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 100.0,
+                                "achieved": 92.3
+                        },
+                        {
+                                "year": 2022,
+                                "target": 100.0,
+                                "achieved": 92.7
+                        },
+                        {
+                                "year": 2023,
+                                "target": 100.0,
+                                "achieved": 94.9
+                        },
+                        {
+                                "year": 2024,
+                                "target": 100.0,
+                                "achieved": 89.1
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of children under 5 years with fever for whom the caretakers sought prompt care within 24 hours at the community",
+                "shortName": "Prompt Care U5",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 81.0,
+                                "achieved": 74.2
+                        },
+                        {
+                                "year": 2022,
+                                "target": 83.0,
+                                "achieved": 74.2
+                        },
+                        {
+                                "year": 2023,
+                                "target": 85.0,
+                                "achieved": 65.9
+                        },
+                        {
+                                "year": 2024,
+                                "target": 87.0,
+                                "achieved": 68.4
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of pregnant women who received three or more doses of IPTp for malaria in the community",
+                "shortName": "IPTp Coverage",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 12.0,
+                                "achieved": 8.2
+                        },
+                        {
+                                "year": 2022,
+                                "target": 13.0,
+                                "achieved": 4.3
+                        },
+                        {
+                                "year": 2023,
+                                "target": 14.0,
+                                "achieved": 8.8
+                        },
+                        {
+                                "year": 2024,
+                                "target": 15.0,
+                                "achieved": 6.1
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of population at risk protected by IRS in the previous 12 months",
+                "shortName": "IRS Population",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 85.0,
+                                "achieved": 57.6
+                        },
+                        {
+                                "year": 2022,
+                                "target": 85.0,
+                                "achieved": 54.5
+                        },
+                        {
+                                "year": 2023,
+                                "target": 85.0,
+                                "achieved": 61.2
+                        },
+                        {
+                                "year": 2024,
+                                "target": 85.0,
+                                "achieved": 71.2
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of children under five years protected by IRS",
+                "shortName": "IRS Children U5",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 85.0,
+                                "achieved": 55.9
+                        },
+                        {
+                                "year": 2022,
+                                "target": 85.0,
+                                "achieved": 48.4
+                        },
+                        {
+                                "year": 2023,
+                                "target": 85.0,
+                                "achieved": 53.7
+                        },
+                        {
+                                "year": 2024,
+                                "target": 85.0,
+                                "achieved": 65.2
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        },
+        {
+                "name": "Proportion of pregnant women protected by IRS",
+                "shortName": "IRS Pregnant Women",
+                "data": [
+                        {
+                                "year": 2021,
+                                "target": 85.0,
+                                "achieved": 50.6
+                        },
+                        {
+                                "year": 2022,
+                                "target": 85.0,
+                                "achieved": 36.3
+                        },
+                        {
+                                "year": 2023,
+                                "target": 85.0,
+                                "achieved": 53.7
+                        },
+                        {
+                                "year": 2024,
+                                "target": 85.0,
+                                "achieved": 91.9
+                        }
+                ],
+                "yAxisLabel": "Percentage (%)",
+                "isPercentage": true
+        }
+];
+
+        // Function to create individual charts
+        function createChart(indicatorData, chartId) {
+            // Increased margins for better spacing
+            const margin = { top: 80, right: 150, bottom: 70, left: 100 };
+            const width = 800 - margin.left - margin.right;
+            const height = 400 - margin.top - margin.bottom;
+
+            // Clear any existing content
+            d3.select(`#${chartId}`).selectAll("*").remove();
+
+            const svg = d3.select(`#${chartId}`)
+                .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Add title with more spacing from the plot
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -50)
+                .attr("text-anchor", "middle")
+                .style("font-size", "16px")
+                .style("font-weight", "bold")
+                .style("fill", "black")
+                .text(indicatorData.name);
+
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -30)
+                .attr("text-anchor", "middle")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .style("fill", "black")
+                .text("Trend Analysis (2021-2024)");
+
+            const data = indicatorData.data;
+
+            // Calculate individual Y-axis scale like the reference
+            const allValues = data.flatMap(d => [d.target, d.achieved]).filter(v => v !== null && v !== undefined);
+            const yMin = 0;
+            const yMax = Math.ceil(d3.max(allValues) / 50) * 50; // Round up to nearest 50
+
+            // Scales
+            const xScale = d3.scaleBand()
+                .domain(data.map(d => d.year))
+                .range([0, width])
+                .padding(0.3);
+
+            const yScale = d3.scaleLinear()
+                .domain([yMin, yMax])
+                .range([height, 0]);
+
+            // Create axes
+            const xAxis = d3.axisBottom(xScale);
+            const yAxis = d3.axisLeft(yScale);
+
+            if (indicatorData.isPercentage) {
+                yAxis.tickFormat(d => d.toFixed(0) + "%");
+            }
+
+            // Add axes
+            svg.append("g")
+                .attr("class", "x-axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(xAxis)
+                .style("font-size", "14px")
+                .style("font-weight", "bold");
+
+            svg.append("g")
+                .attr("class", "y-axis")
+                .call(yAxis)
+                .style("font-size", "14px");
+
+            // Add Y-axis label with more spacing from the axis
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left + 20)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-weight", "bold")
+                .style("font-size", "14px")
+                .style("fill", "#2c3e50")
+                .text(indicatorData.yAxisLabel);
+
+            // Add X-axis label with more spacing
+            svg.append("text")
+                .attr("transform", `translate(${width/2}, ${height + margin.bottom - 20})`)
+                .style("text-anchor", "middle")
+                .style("font-weight", "bold")
+                .style("font-size", "14px")
+                .style("fill", "#2c3e50")
+                .text("Year");
+
+            // Add grid lines exactly like reference
+            svg.append("g")
+                .attr("class", "grid")
+                .call(d3.axisLeft(yScale)
+                    .tickSize(-width)
+                    .tickFormat("")
+                )
+                .style("stroke", "#e0e0e0")
+                .style("stroke-width", "0.5px");
+
+            // Filter data for lines (only non-null achieved values)
+            const validData = data.filter(d => d.achieved !== null && d.achieved !== undefined);
+
+            if (validData.length > 0) {
+                // Create target line
+                const line = d3.line()
+                    .x(d => xScale(d.year) + xScale.bandwidth() / 2)
+                    .y(d => yScale(d.target));
+
+                svg.append("path")
+                    .datum(validData)
+                    .attr("fill", "none")
+                    .attr("stroke", "#28a745")
+                    .attr("stroke-width", 4)
+                    .attr("d", line);
+
+                // Create achieved line
+                const achievedLine = d3.line()
+                    .x(d => xScale(d.year) + xScale.bandwidth() / 2)
+                    .y(d => yScale(d.achieved));
+
+                svg.append("path")
+                    .datum(validData)
+                    .attr("fill", "none")
+                    .attr("stroke", "#007bff")
+                    .attr("stroke-width", 4)
+                    .attr("d", achievedLine);
+            }
+
+            // Add points and labels for all data (including null values)
+            data.forEach(d => {
+                const x = xScale(d.year) + xScale.bandwidth() / 2;
+                const yTarget = yScale(d.target);  // Y position for TARGET value
+                
+                // Add target point (green) at yTarget position
+                svg.append("circle")
+                    .attr("cx", x)
+                    .attr("cy", yTarget)
+                    .attr("r", 5)
+                    .attr("fill", "#28a745");
+
+                // Add achieved point and label only if achieved value exists
+                if (d.achieved !== null && d.achieved !== undefined) {
+                    const yAchieved = yScale(d.achieved);  // Y position for ACHIEVED value
+                    
+                    // Add achieved point (blue) at yAchieved position
+                    svg.append("circle")
+                        .attr("cx", x)
+                        .attr("cy", yAchieved)
+                        .attr("r", 5)
+                        .attr("fill", "#007bff");
+
+                    // Add variance arrow between the two points
+                    const variance = ((d.achieved - d.target) / d.target * 100);
+                    
+                    // Draw yellow arrow line from target point to achieved point
+                    svg.append("line")
+                        .attr("x1", x)
+                        .attr("y1", yTarget)
+                        .attr("x2", x)
+                        .attr("y2", yAchieved)
+                        .attr("stroke", "#ffc107")
+                        .attr("stroke-width", 2);
+
+                    // Add arrowhead pointing to achieved value
+                    const arrowDirection = yAchieved > yTarget ? 1 : -1;
+                    svg.append("polygon")
+                        .attr("points", `${x-4},${yAchieved - (6 * arrowDirection)} ${x+4},${yAchieved - (6 * arrowDirection)} ${x},${yAchieved}`)
+                        .attr("fill", "#ffc107");
+
+                    // Add variance percentage text between the points
+                    const varianceText = `${variance >= 0 ? '+' : ''}${variance.toFixed(1)}%`;
+                    
+                    const varianceTextEl = svg.append("text")
+                        .attr("x", x + 20)
+                        .attr("y", (yTarget + yAchieved) / 2)
+                        .attr("dy", "0.35em")
+                        .style("font-size", "10px")
+                        .style("font-weight", "bold")
+                        .text(varianceText);
+
+                    const varianceBbox = varianceTextEl.node().getBBox();
+
+                    svg.append("rect")
+                        .attr("x", varianceBbox.x - 2)
+                        .attr("y", varianceBbox.y - 1)
+                        .attr("width", varianceBbox.width + 4)
+                        .attr("height", varianceBbox.height + 2)
+                        .attr("fill", "white")
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 1)
+                        .attr("rx", 1);
+
+                    varianceTextEl.style("fill", "black").raise();
+
+                    // Smart label positioning: higher values get labels above, lower values below
+                    const targetIsHigher = d.target > d.achieved; // Higher value = higher on chart
+                    
+                    // TARGET LABEL: Shows target value
+                    const targetLabel = indicatorData.isPercentage ? 
+                        `${d.target % 1 === 0 ? d.target.toFixed(0) : d.target.toFixed(1)}%` : 
+                        d.target.toString();
+
+                    // Position target label: above if target is higher value, below if target is lower value
+                    const targetLabelY = targetIsHigher ? yTarget - 15 : yTarget + 25;
+                    
+                    const targetText = svg.append("text")
+                        .attr("x", x)
+                        .attr("y", targetLabelY)
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "11px")
+                        .style("font-weight", "bold")
+                        .text(targetLabel);
+
+                    const targetBbox = targetText.node().getBBox();
+                    
+                    svg.append("rect")
+                        .attr("x", targetBbox.x - 3)
+                        .attr("y", targetBbox.y - 1)
+                        .attr("width", targetBbox.width + 6)
+                        .attr("height", targetBbox.height + 2)
+                        .attr("fill", "#28a745")
+                        .attr("rx", 2);
+
+                    targetText.style("fill", "white").raise();
+
+                    // ACHIEVED LABEL: Shows achieved value
+                    const achievedLabel = indicatorData.isPercentage ? 
+                        `${d.achieved % 1 === 0 ? d.achieved.toFixed(0) : d.achieved.toFixed(1)}%` : 
+                        d.achieved.toString();
+
+                    // Position achieved label: above if achieved is higher value, below if achieved is lower value
+                    const achievedLabelY = targetIsHigher ? yAchieved + 25 : yAchieved - 15;
+
+                    const achievedText = svg.append("text")
+                        .attr("x", x)
+                        .attr("y", achievedLabelY)
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "11px")
+                        .style("font-weight", "bold")
+                        .text(achievedLabel);
+
+                    const achievedBbox = achievedText.node().getBBox();
+
+                    // Always use blue background for achieved labels
+                    svg.append("rect")
+                        .attr("x", achievedBbox.x - 3)
+                        .attr("y", achievedBbox.y - 1)
+                        .attr("width", achievedBbox.width + 6)
+                        .attr("height", achievedBbox.height + 2)
+                        .attr("fill", "#007bff")
+                        .attr("rx", 2);
+
+                    achievedText.style("fill", "white").raise();
+
+                } else {
+                    // When no achieved data, only show target
+                    const targetLabel = indicatorData.isPercentage ? 
+                        `${d.target % 1 === 0 ? d.target.toFixed(0) : d.target.toFixed(1)}%` : 
+                        d.target.toString();
+
+                    const targetText = svg.append("text")
+                        .attr("x", x)
+                        .attr("y", yTarget - 15)
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "11px")
+                        .style("font-weight", "bold")
+                        .text(targetLabel);
+
+                    const targetBbox = targetText.node().getBBox();
+                    
+                    svg.append("rect")
+                        .attr("x", targetBbox.x - 3)
+                        .attr("y", targetBbox.y - 1)
+                        .attr("width", targetBbox.width + 6)
+                        .attr("height", targetBbox.height + 2)
+                        .attr("fill", "#28a745")
+                        .attr("rx", 2);
+
+                    targetText.style("fill", "white").raise();
+
+                    // Add "No Data" text for null achieved values
+                    svg.append("text")
+                        .attr("x", x)
+                        .attr("y", yTarget + 25)
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "10px")
+                        .style("font-style", "italic")
+                        .style("fill", "#9ca3af")
+                        .text("No Data");
+                }
+            });
+
+            // Add legend outside the plot area
+            const legend = svg.append("g")
+                .attr("class", "legend")
+                .attr("transform", `translate(${width + 20}, 20)`);
+
+            // Target legend
+            legend.append("circle")
+                .attr("cx", 5)
+                .attr("cy", 0)
+                .attr("r", 5)
+                .attr("fill", "#28a745");
+
+            legend.append("text")
+                .attr("x", 15)
+                .attr("y", 0)
+                .attr("dy", "0.35em")
+                .style("font-size", "12px")
+                .style("font-weight", "bold")
+                .style("fill", "black")
+                .text("Target");
+
+            // Achieved legend
+            legend.append("circle")
+                .attr("cx", 5)
+                .attr("cy", 20)
+                .attr("r", 5)
+                .attr("fill", "#007bff");
+
+            legend.append("text")
+                .attr("x", 15)
+                .attr("y", 20)
+                .attr("dy", "0.35em")
+                .style("font-size", "12px")
+                .style("font-weight", "bold")
+                .style("fill", "black")
+                .text("Achieved");
+        }
+
+        // Navigation functions
+        let navExpanded = true;
+
+        function toggleNav() {
+            const nav = document.getElementById('sectionNav');
+            const content = document.getElementById('navContent');
+            const toggle = document.getElementById('navToggle');
+
+            navExpanded = !navExpanded;
+
+            if (navExpanded) {
+                content.classList.add('expanded');
+                toggle.classList.add('expanded');
+            } else {
+                content.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+            }
+        }
+
+        function scrollToSection(sectionId) {
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                updateActiveNavItem(sectionId);
+            }
+        }
+
+        function updateActiveNavItem(sectionId) {
+            // Clear all active states
+            document.querySelectorAll('.nav-main-item, .nav-sub-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Set active state for the target section
+            const activeItem = document.querySelector(`a[href="#${sectionId}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        }
+
+        function updateScrollProgress() {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.getElementById('scrollProgress').style.width = scrollPercent + '%';
+        }
+
+        // Initialize charts and navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create chart containers and charts
+            const chartsContainer = document.getElementById('chartsContainer');
+            
+            outputIndicators.forEach((indicator, index) => {
+                const chartDiv = document.createElement('div');
+                chartDiv.id = `indicator-${index + 1}`;
+                chartDiv.className = 'chart-container';
+                chartDiv.innerHTML = `
+                    <div class="chart-title">${index + 1}. ${indicator.name}</div>
+                    <svg class="chart-svg" id="chart-${index + 1}"></svg>
+                `;
+                chartsContainer.appendChild(chartDiv);
+                
+                // Create the chart
+                createChart(indicator, `chart-${index + 1}`);
+            });
+
+            // Set up scroll progress
+            window.addEventListener('scroll', updateScrollProgress);
+            updateScrollProgress();
+
+            // Handle anchor clicks
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    scrollToSection(targetId);
+                });
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    if (e.key === 'b') {
+                        e.preventDefault();
+                        toggleNav();
+                    }
+                }
+            });
+
+            // Auto-scroll to first section on page load if no hash
+            if (window.location.hash) {
+                const hash = window.location.hash.substring(1);
+                scrollToSection(hash);
+            }
+        });
+    </script>
+</body>
+</html>
